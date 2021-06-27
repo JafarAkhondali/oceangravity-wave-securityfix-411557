@@ -1,61 +1,52 @@
-// Import stylesheets
-import './style.css';
-
 const run = function () {
   const list = [
-    { name: 'Juan' },
-    { name: 'Valeria' },
-    { name: 'Gati' },
-    { name: 'Mú' },
-    { name: 'Niña' }
+    { id: 0, name: 'Juan' },
+    { id: 1, name: 'Valeria' },
+    { id: 2, name: 'Gati' },
+    { id: 3, name: 'Mú' },
+    { id: 4, name: 'Niña' }
   ];
-  var n = 1;
-  
-  const context = {
+
+  const n = 1;
+
+  this.context = {
     list,
     n
   };
-  
+
   function wrappedEval(textExpression, contextData) {
     let fn = Function(
-      `
-        debugger
-        "use strict"; 
-        var $context = this;
-        return (${textExpression})
-      `
+      `"use strict";return(this.${textExpression.trim()})`
     );
     return fn.bind(contextData)();
   }
+
   console.log(this);
-  
+
   // Write Javascript code!
   const appDiv = document.getElementById('app');
-  
+
   const appClone = appDiv.cloneNode(true);
-  
+
   // Remove all children
   appDiv.replaceChildren();
-  
+
   Array.from(appClone.children).forEach(element => {
     if (element.hasAttribute('w-for')) {
       const wFor = element.getAttribute('w-For');
       const wForParts = wFor.split(' ');
-  
+
       const contextNode = element.cloneNode(false);
       appDiv.appendChild(contextNode);
-  
-      if (Array.isArray(context[wForParts[2]])) {
+
+      if (Array.isArray(this.context[wForParts[2]])) {
         Array.from(element.children).forEach(child => {
-          context[wForParts[2]].forEach(item => {
+          this.context[wForParts[2]].forEach(item => {
             const contextChild = child.cloneNode(false);
-            const innerTemplates = child.innerText.match(/[^{\{]+(?=}\})/g);
-            console.log(
-              child.innerText,
-              innerTemplates,
-              console.log(wrappedEval(innerTemplates[0], this))
-            );
-            contextChild.innerText = item.name;
+            // /[^{\{]+(?=}\})/g
+            const innerTemplates = child.innerText.match(/[^{{]+(?=}})/g);
+            this.context.item = item
+            contextChild.innerText = wrappedEval(innerTemplates[1], this.context);
             contextNode.appendChild(contextChild);
           });
         });
