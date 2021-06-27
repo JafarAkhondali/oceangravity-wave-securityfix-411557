@@ -32,8 +32,8 @@ const run = function () {
   appDiv.replaceChildren();
 
   Array.from(appClone.children).forEach(element => {
-    if (element.hasAttribute('w-for')) {
-      const wFor = element.getAttribute('w-For');
+    if (element.hasAttribute('data-for')) {
+      const wFor = element.getAttribute('data-for');
       const wForParts = wFor.split(' ');
 
       const contextNode = element.cloneNode(false);
