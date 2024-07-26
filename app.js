@@ -15,6 +15,11 @@ http.createServer(function (request, response) {
 
     // The requested URL, like http://localhost:8000/file.html => /file.html
     const uri = url.parse(request.url).pathname;
+    if (path.normalize(decodeURI(uri)) !== decodeURI(uri)) {
+        response.statusCode = 403;
+        response.end();
+        return;
+    }
     // get the /file.html from above and then find it from the current folder
     let filename = path.join(process.cwd(), uri);
 
